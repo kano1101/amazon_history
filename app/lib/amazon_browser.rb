@@ -1,3 +1,4 @@
+# coding: utf-8
 class AmazonBrowser
   LOGIN_URL = 'https://www.amazon.co.jp/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fyourstore%2Fhome%3Fie%3DUTF8%26ref_%3Dnav_newcust&prevRID=GGWVQJPSBNPHF9V4557G&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=jpflex&openid.mode=checkid_setup&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&pageId=jpflex&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0'
   def self.login
@@ -25,20 +26,30 @@ class AmazonBrowser
     page_item_count = browser.divs(class: "a-box-group").count
     for idx in 0..(page_item_count - 1) do
       browser.div(class: "a-box-group", index: idx).scroll.to
-      name = browser.div(class: "a-box-group", index: idx).element(class: "a-box", index: 1).element(class: "a-link-normal", index: 1).text()
-      ap name
-      url = browser.div(class: "a-box-group", index: idx).element(class: "a-box", index: 1).a(class: "a-link-normal", index: 1).href
-      ap url
+      
       purchased_at = browser.div(class: "a-box-group", index: idx).element(class: ["a-color-secondary", "value"], index: 0).text()
-      ap purchased_at
-      price = browser.div(class: "a-box-group", index: idx).element(class: ["a-color-secondary", "value"], index: 1).text().delete("￥").delete(",").strip
-      ap price
-      hash = {}
-      hash["name"] = name
-      hash["url"] = url
-      hash["purchased_at"] = purchased_at
-      hash["price"] = price
-      array << hash
+      #      ap purchased_at
+
+      shipment_count = browser.div(class: "a-box-group", index: idx).elements(class: ["a-box", "shipment"]).count
+      for shipment_n in 0..(shipment_count - 1) do
+        buy_item_count = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).elements(class: "a-fixed-left-grid").count
+        for buy_item_n in 0..(buy_item_count - 1) do
+          ap purchased_at
+          price = browser.div(class: "a-box-group", index: idx).element(class: ["a-size-small", "a-color-price"], index: buy_item_n).text().delete("￥").delete(",").strip
+          ap price
+          name = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).element(class: "a-link-normal", index: 0).text()
+          ap name
+          url = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).a(class: "a-link-normal", index: 0).href
+          ap url
+          
+          hash = {}
+          hash["purchased_at"] = purchased_at
+          hash["price"] = price
+          hash["name"] = name
+          hash["url"] = url
+          array << hash
+        end
+      end
     end
 
     if browser.element(class: "a-last").a.exists?
@@ -81,7 +92,7 @@ class AmazonBrowser
   def self.login_and_batch_scrape
     browser = self.login
     array = []
-    years = [2019, 2018, 2017]
+    years = [2020, 2019, 2018, 2017, 2016]
     # years = [2020,2016]
     years.each do |year|
       self.goto_history(browser, year)
@@ -92,7 +103,7 @@ class AmazonBrowser
 
   def self.login_and_batch_download
     browser = self.login
-    years = [2019, 2018, 2017]
+    years = [2020, 2019, 2018, 2017, 2016]
     years.each do |year|
       self.goto_history(browser, year)
       self.download_receipt(browser)

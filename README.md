@@ -22,3 +22,14 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+# Usage
+
+```
+$ export EMAIL="hogehoge"
+$ export PASSWORD="fugafuga"
+$ cd app/lib/
+$ rails c
+> CsvWriter.generate_report
+> exit
+```
