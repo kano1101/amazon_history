@@ -25,21 +25,24 @@ class AmazonBrowser
 
     page_item_count = browser.divs(class: "a-box-group").count
     for idx in 0..(page_item_count - 1) do
-      browser.div(class: "a-box-group", index: idx).scroll.to
-      
-      purchased_at = browser.div(class: "a-box-group", index: idx).element(class: ["a-color-secondary", "value"], index: 0).text()
-      #      ap purchased_at
+      div = browser.div(class: "a-box-group", index: idx)
 
-      shipment_count = browser.div(class: "a-box-group", index: idx).elements(class: ["a-box", "shipment"]).count
+      div.scroll.to
+      purchased_at = div.element(class: ["a-color-secondary", "value"], index: 0).text()
+
+      shipment_count = div.elements(class: ["a-box", "shipment"]).count
       for shipment_n in 0..(shipment_count - 1) do
-        buy_item_count = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).elements(class: "a-fixed-left-grid").count
+        buy_item_count = div.element(class: ["a-box", "shipment"], index: shipment_n).elements(class: "a-fixed-left-grid").count
         for buy_item_n in 0..(buy_item_count - 1) do
+          price = div.element(class: ["a-size-small", "a-color-price"], index: buy_item_n).text().delete("￥").delete(",").strip
+          name = div.element(class: ["a-box", "shipment"], index: shipment_n)
+                   .element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).element(class: "a-link-normal", index: 0).text()
+          url = div.element(class: ["a-box", "shipment"], index: shipment_n)
+                  .element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).a(class: "a-link-normal", index: 0).href
+          
           ap purchased_at
-          price = browser.div(class: "a-box-group", index: idx).element(class: ["a-size-small", "a-color-price"], index: buy_item_n).text().delete("￥").delete(",").strip
           ap price
-          name = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).element(class: "a-link-normal", index: 0).text()
           ap name
-          url = browser.div(class: "a-box-group", index: idx).element(class: ["a-box", "shipment"], index: shipment_n).element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).a(class: "a-link-normal", index: 0).href
           ap url
           
           hash = {}
