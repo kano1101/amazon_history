@@ -34,7 +34,8 @@ class AmazonBrowser
       for shipment_n in 0..(shipment_count - 1) do
         buy_item_count = div.element(class: ["a-box", "shipment"], index: shipment_n).elements(class: "a-fixed-left-grid").count
         for buy_item_n in 0..(buy_item_count - 1) do
-          price = div.element(class: ["a-size-small", "a-color-price"], index: buy_item_n).text().delete("￥").delete(",").strip
+          price = div.element(class: ["a-box", "shipment"], index: shipment_n)
+                    .element(class: ["a-size-small", "a-color-price"], index: buy_item_n).text().delete("￥").delete(",").strip
           name = div.element(class: ["a-box", "shipment"], index: shipment_n)
                    .element(class: ["a-fixed-left-grid-col", "a-col-right"], index: buy_item_n).element(class: "a-link-normal", index: 0).text()
           url = div.element(class: ["a-box", "shipment"], index: shipment_n)
@@ -95,7 +96,8 @@ class AmazonBrowser
   def self.login_and_batch_scrape
     browser = self.login
     array = []
-    years = [2020, 2019, 2018, 2017, 2016]
+    years = [2021]
+    # years = [2020, 2019, 2018, 2017, 2016]
     # years = [2020,2016]
     years.each do |year|
       self.goto_history(browser, year)
